@@ -1,0 +1,15 @@
+C1 = init.c auxfct.c baselinerisk.c currentLevel.c currentSlope.c nonlinear.c
+C2 = densityGaussian.c densityPoisson.c loglik.c wrapper.c
+
+# Define order of compilation
+OBJECTS = $(C1:.c=.o) $(C2:.c=.o)
+
+$(SHLIB): $(OBJECTS)
+
+#Setup dependencies for parallel make
+loglik.o: auxfct.o baselinerisk.o densityGaussian.o densityPoisson.o currentLevel.o currentSlope.o nonlinear.o
+densityGaussian.o: auxfct.o
+densityPoisson.o: auxfct.o
+currentLevel.o: auxfct.o
+currentSlope.o: auxfct.o
+wrapper.o: loglik.o

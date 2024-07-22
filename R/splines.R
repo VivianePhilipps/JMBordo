@@ -1,0 +1,77 @@
+## splines function
+## M-splines used for baseline hazard
+
+Msplines <- function(df, knots, Boundary.knots, ...)
+{
+    ## first element in ... is x
+    dots <- list(...)
+    missingx <- TRUE
+    if(length(dots))
+    {
+        x <- dots[[1]]
+        missingx <- FALSE
+    }
+    
+    if(!missing(df))
+    {
+        ## defines knots according to df
+        if(df < 5) stop("df should be at least 5 for M-splines")
+        
+        nnodes <- df - 2
+        nodes <- rep(NA, nnodes)
+
+        if(!missing(knots)) stop("Specify either df or knots, not both")
+
+        if(!missingx)
+        {
+            nodesquant <- quantile(x, prob = c(1:(nnodes - 2)) / (nnodes - 1))
+            if(any(duplicated(nodesquant))) stop("cannot put nodes at the quantiles. Please specify knots.")
+            nodes[2:(nnodes - 1)] <- as.numeric(nodesquant)
+        }
+    }
+    
+    if(!missing(knots))
+    {
+        ## user specified knots
+        if(any(is.na(knots))) stop("missing values in knots")
+        if(any(duplicated(knots))) stop("duplicated knots")
+         
+        nnodes <- length(knots) + 2
+        df <- nnodes + 2
+        
+        nodes <- rep(NA, nnodes)
+        nodes[2:(nnodes - 1)] <- knots
+    }
+    else
+    {
+        if(missing(df)) stop("knots or df must be specified")
+    }
+    
+    if(!missing(Boundary.knots))
+    {
+        ## user specified boundaries
+        if(any(is.na(Boundary.knots))) stop("missing values in Boundary.knots")
+        nodes[1] <- Boundary.knots[1]
+        nodes[nnodes] <- Boundary.knots[2]
+    }
+    else
+    {
+        if(!missingx)
+        {
+            ## boundaries at min and max
+            min1 <- min(x)
+            max1 <- max(x)
+
+            ## rounding
+            min2 <- round(min1, 4)
+            if(min1 < min2) min2 <- min2 - 0.0001
+            max2 <- round(max1, 4)
+            if(max1 > max2) max2 <- max2 + 0.0001
+
+            nodes[1] <- min2
+            nodes[nnodes] <- max2
+        }
+    }
+
+    return(list(npm = df, nnodes = nnodes, nodes=nodes, type="Msplines", call=match.call()))
+}

@@ -1,0 +1,10 @@
+Package: JMBordo
+Type: Package
+Title: Joint models from the Bordeaux team
+Version: 0.0.1
+Date: 2024-07-22
+Author: Viviane Philipps
+Maintainer: Viviane Philipps <Viviane.Philipps@u-bordeaux.fr>
+Description: More about what it does (maybe more than one line)
+License: GPL (>= 2)
+Imports: doParallel, foreach, marqLevAlg (>= 2.0.0), randtoolbox
